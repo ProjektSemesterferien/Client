@@ -3,7 +3,7 @@ using TMPro;
 
 public class GroundCalculater : MonoBehaviour {
 
-    enum GroundMode {SHOP, WAIT, SHRINK, END, STATS};
+    enum GroundMode {SHOP, WAIT, SHRINK, END};
 
     [Header("GameSettings")]
     public float RoundTime;
@@ -39,6 +39,7 @@ public class GroundCalculater : MonoBehaviour {
         playerStatsIntveral = playerStatsTime;
         scalingVec = new Vector3(speed, speed, speed);
         scaleOffset = speed / 10.0f;
+        stats.GetComponent<StatController>().forceOpenStats();
     }
 
     // Update is called once per frame
@@ -50,6 +51,7 @@ public class GroundCalculater : MonoBehaviour {
                 if (shoppingTime < 0.0f)
                 {
                     shop.SetActive(false);
+                    stats.GetComponent<StatController>().revert();
                     mode = GroundMode.WAIT;
                     shoppingTime = shoppingInterval;
                 }
@@ -85,27 +87,14 @@ public class GroundCalculater : MonoBehaviour {
                 }
                 break;
             case GroundMode.END:
-                ground.gameObject.SetActive(false);
-                mode = GroundMode.STATS;
-                break;
-            case GroundMode.STATS:
-                countdownAusgabe.text = "Runden Ende";
-                if (playerStatsTime < 0.0f)
-                {
-                    stats.SetActive(false);
-                    mode = GroundMode.SHOP;
-                    roundCounter++;
-                    stage = 0;
-                    ground.gameObject.SetActive(true);
-                    ground.localScale = new Vector3(1f,1f,1f);
-                    playerStatsTime = playerStatsIntveral;
-                }
-                else
-                {
-                    stats.SetActive(true);
-                    playerStatsTime -= Time.deltaTime;                 
-                }
-                break;
+                ground.gameObject.SetActive(false);   
+                mode = GroundMode.SHOP;
+                roundCounter++;
+                stage = 0;
+                ground.gameObject.SetActive(true);
+                ground.localScale = new Vector3(1f, 1f, 1f);
+                stats.GetComponent<StatController>().forceOpenStats();
+                break;          
         }
     }
 }

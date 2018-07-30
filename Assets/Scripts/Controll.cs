@@ -12,6 +12,8 @@ public class Controll : MonoBehaviour {
     public float panBoarderThickness = 10f;
     private bool doMovement = true;
 
+    private float minZ = -70f, maxZ = 60f;
+    private float minX = -70f, maxX = 60f;
     // Use this for initialization
     void Start () {
 		
@@ -25,19 +27,19 @@ public class Controll : MonoBehaviour {
         if (!doMovement)
             return;  
 
-        if (Input.mousePosition.y >= Screen.height - panBoarderThickness)
+        if (Input.mousePosition.y >= Screen.height - panBoarderThickness && transform.position.z <= maxZ)
         {
             transform.Translate(Vector3.forward * panSpeed * Time.deltaTime, Space.World);
         }
-        if (Input.mousePosition.y <= panBoarderThickness)
+        if (Input.mousePosition.y <= panBoarderThickness && transform.position.z >= minZ)
         {
             transform.Translate(Vector3.back * panSpeed * Time.deltaTime, Space.World);
         }
-        if (Input.mousePosition.x >= Screen.width - panBoarderThickness)
+        if (Input.mousePosition.x >= Screen.width - panBoarderThickness && transform.position.x <= maxX)
         {
             transform.Translate(Vector3.right * panSpeed * Time.deltaTime, Space.World);
         }
-        if (Input.mousePosition.x <= panBoarderThickness)
+        if (Input.mousePosition.x <= panBoarderThickness && transform.position.x >= minX)
         {
             transform.Translate(Vector3.left * panSpeed * Time.deltaTime, Space.World);
         }
