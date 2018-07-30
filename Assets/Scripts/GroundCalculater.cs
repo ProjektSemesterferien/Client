@@ -3,27 +3,40 @@ using TMPro;
 
 public class GroundCalculater : MonoBehaviour {
 
-    enum GroundMode { WAIT, SHRINK, END};
+    enum GroundMode {SHOP, WAIT, SHRINK, END, STATS};
 
     [Header("GameSettings")]
     public float RoundTime;
     public float intervalTime;
-    public Transform ground;
+    public float shoppingTime;
+    public float playerStatsTime;
     public Vector2[] scales;
-    public TextMeshProUGUI countdownAusgabe;
-    private float scaleOffset;
-
-    private float countdown;
-    private float scale = 1f;
     public float speed = 10f;
 
-    private GroundMode mode = GroundMode.WAIT;
+    [Header("GeneralSettings")]
+    public Transform ground;
+    public TextMeshProUGUI countdownAusgabe;
+    public TextMeshProUGUI RundenAusgabe;
+    public GameObject stats;
+    public GameObject shop;
+
+    private float scaleOffset;
+    private float countdown;
+    private float shoppingInterval;
+    private float playerStatsIntveral;
+    private float scale = 1f;
+    private int roundCounter = 0;
+
+    private GroundMode mode = GroundMode.SHOP;
     private int stage = 0;
     private Vector3 scalingVec;
 
     private void Start()
     {
+        stats.SetActive(false);
         countdown = intervalTime;
+        shoppingInterval = shoppingTime;
+        playerStatsIntveral = playerStatsTime;
         scalingVec = new Vector3(speed, speed, speed);
         scaleOffset = speed / 10.0f;
     }
@@ -32,6 +45,21 @@ public class GroundCalculater : MonoBehaviour {
     void Update() {
         switch(mode)
         {
+            case GroundMode.SHOP:
+                RundenAusgabe.text = "Runde: " + (roundCounter+1);
+                if (shoppingTime < 0.0f)
+                {
+                    shop.SetActive(false);
+                    mode = GroundMode.WAIT;
+                    shoppingTime = shoppingInterval;
+                }
+                else
+                {
+                    shop.SetActive(true);
+                    shoppingTime -= Time.deltaTime;
+                    countdownAusgabe.text = "Shop Zeit: " + Mathf.Floor(shoppingTime + 1).ToString();
+                }
+                break;
             case GroundMode.WAIT:
                 if (countdown < 0.0f)
                 {
@@ -50,15 +78,33 @@ public class GroundCalculater : MonoBehaviour {
                 if (Vector2.Distance(new Vector2(ground.localScale.x, ground.localScale.z), scales[stage]) < scaleOffset)
                 {
                     stage++;
-                    if (stage >= scales.Length)
-                        mode = GroundMode.END;
+                    if (stage >= scales.Length) 
+                        mode = GroundMode.END;            
                     else
                         mode = GroundMode.WAIT;
                 }
                 break;
             case GroundMode.END:
-                countdownAusgabe.text = "Ende";
                 ground.gameObject.SetActive(false);
+                mode = GroundMode.STATS;
+                break;
+            case GroundMode.STATS:
+                countdownAusgabe.text = "Runden Ende";
+                if (playerStatsTime < 0.0f)
+                {
+                    stats.SetActive(false);
+                    mode = GroundMode.SHOP;
+                    roundCounter++;
+                    stage = 0;
+                    ground.gameObject.SetActive(true);
+                    ground.localScale = new Vector3(1f,1f,1f);
+                    playerStatsTime = playerStatsIntveral;
+                }
+                else
+                {
+                    stats.SetActive(true);
+                    playerStatsTime -= Time.deltaTime;                 
+                }
                 break;
         }
     }
