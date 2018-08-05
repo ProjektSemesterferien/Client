@@ -9,7 +9,6 @@ public class GroundCalculater : MonoBehaviour {
     public float RoundTime;
     public float intervalTime;
     public float shoppingTime;
-    public float playerStatsTime;
     public Vector2[] scales;
     public float speed = 10f;
 
@@ -23,7 +22,6 @@ public class GroundCalculater : MonoBehaviour {
     private float scaleOffset;
     private float countdown;
     private float shoppingInterval;
-    private float playerStatsIntveral;
     private float scale = 1f;
     private int roundCounter = 0;
 
@@ -36,7 +34,6 @@ public class GroundCalculater : MonoBehaviour {
         stats.SetActive(false);
         countdown = intervalTime;
         shoppingInterval = shoppingTime;
-        playerStatsIntveral = playerStatsTime;
         scalingVec = new Vector3(speed, speed, speed);
         scaleOffset = speed / 10.0f;
         stats.GetComponent<StatController>().forceOpenStats();
@@ -92,7 +89,7 @@ public class GroundCalculater : MonoBehaviour {
                 roundCounter++;
                 stage = 0;
                 ground.gameObject.SetActive(true);
-                ground.localScale = new Vector3(1f, 1f, 1f);
+                ground.localScale = new Vector3(1f, 10f, 1f);
                 stats.GetComponent<StatController>().forceOpenStats();
                 break;          
         }
